@@ -2,12 +2,12 @@ from setuptools import setup
 
 MAJOR_VERSION = '0'
 MINOR_VERSION = '0'
-MICRO_VERSION = '1'
+MICRO_VERSION = '2'
 VERSION = "{}.{}.{}".format(MAJOR_VERSION, MINOR_VERSION, MICRO_VERSION)
 
 setup(name = 'gittraffic',
       version = VERSION,
-      description = 'Using a CRON, follow your git traffic per package',
+      description = 'Follow your git traffic per package in a github repo',
       url = 'https://github.com/kootenpv/gittraffic',
       author = 'Pascal van Kooten',
       author_email = 'kootenpv@gmail.com',

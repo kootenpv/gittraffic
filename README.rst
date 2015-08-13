@@ -1,1 +1,1 @@
-Discover where your sensitive data has been leaked.
+Save your gittrafic data so it won't get lost!
