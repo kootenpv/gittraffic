@@ -2,8 +2,8 @@ import lxml.html
 from selenium import webdriver
 import datetime
 import sys
+import os
 import json
-driver = webdriver.Firefox()
 
 USERNAME = sys.argv[1]
 PASSWORD = sys.argv[2]
@@ -11,7 +11,7 @@ SAVE_PATH = sys.argv[3]
 PACKAGES = sys.argv[4:]
 
 # login
-def login():
+def login(driver):
     driver.get('https://github.com/login')
     ele = driver.find_element_by_id('login_field')
     ele.send_keys(USERNAME)
@@ -38,11 +38,18 @@ def main():
     if len(sys.argv) < 4:
         print('Usage: <username> <password> <save_path> <package_name_1> <package_name_2> <etc>')
         return
-    with open(SAVE_PATH) as f:
-        package_results = json.load(f)
-        
+
+    if os.path.isfile(SAVE_PATH):
+        with open(SAVE_PATH) as f:
+            package_results = json.load(f)
+    else:        
+        package_results = {}
+
+    # create driver    
+    driver = webdriver.Firefox()    
+    
     # login
-    login()
+    login(driver)
 
     # update package info
     for package in PACKAGES:
@@ -53,6 +60,11 @@ def main():
         tree = lxml.html.fromstring(driver.page_source)
         update_results(tree, package_results[package])
 
+    # close driver
+    driver.close()        
+    
     # save results    
-    with open(SAVE_PATH) as f:
+    with open(SAVE_PATH, 'w') as f:
         json.dump(package_results, f) 
+
+        
