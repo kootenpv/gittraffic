@@ -4,6 +4,7 @@ import datetime
 import sys
 import os
 import json
+from .gitplot import plot_all
 
 USERNAME = sys.argv[1]
 PASSWORD = sys.argv[2]
@@ -11,6 +12,8 @@ SAVE_PATH = sys.argv[3]
 PACKAGES = sys.argv[4:]
 
 # login
+
+
 def login(driver):
     driver.get('https://github.com/login')
     ele = driver.find_element_by_id('login_field')
@@ -21,33 +24,39 @@ def login(driver):
 
     ele.submit()
 
+
 def update_results(tree, results):
     header = tree.xpath('//*[contains(text(), "Referring sites")]')
     if header:
-        table = header[0].getnext() 
+        table = header[0].getnext()
         now = str(datetime.datetime.now())
-        for row in table.xpath('.//tr'): 
+        for row in table.xpath('.//tr'):
             cells = row.xpath('./td')
-            if cells: 
-                site, views, unique = cells 
+            if cells:
+                site, views, unique = cells
                 results.append((now, site.text_content().strip(), views.text, unique.text))
-        return results        
+        return results
+
 
 def main():
     # get history
+    if len(sys.argv) == 2 and 'plot' in sys.argv:
+        plot_all()
+        return
     if len(sys.argv) < 4:
         print('Usage: <username> <password> <save_path> <package_name_1> <package_name_2> <etc>')
+        print('Usage: plot')
         return
 
     if os.path.isfile(SAVE_PATH):
         with open(SAVE_PATH) as f:
             package_results = json.load(f)
-    else:        
+    else:
         package_results = {}
 
-    # create driver    
-    driver = webdriver.Firefox()    
-    
+    # create driver
+    driver = webdriver.Firefox()
+
     # login
     login(driver)
 
@@ -61,10 +70,8 @@ def main():
         update_results(tree, package_results[package])
 
     # close driver
-    driver.close()        
-    
-    # save results    
-    with open(SAVE_PATH, 'w') as f:
-        json.dump(package_results, f) 
+    driver.close()
 
-        
+    # save results
+    with open(SAVE_PATH, 'w') as f:
+        json.dump(package_results, f)
